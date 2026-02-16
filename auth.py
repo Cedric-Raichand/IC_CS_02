@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, redirect, url_for, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user
 from models import db, User
+from rsa_utils import generate_keys
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -13,11 +14,20 @@ def register():
 
         hashed_password = generate_password_hash(password)
 
-        new_user = User(username=username, password=hashed_password)
+        # Generate RSA keys
+        public_key, private_key = generate_keys()
+
+        new_user = User(
+            username=username,
+            password=hashed_password,
+            public_key=public_key,
+            private_key=private_key
+        )
+
         db.session.add(new_user)
         db.session.commit()
 
-        flash("Account created!")
+        flash("Account created! You can now login.")
         return redirect(url_for("auth.login"))
 
     return render_template("register.html")
@@ -33,7 +43,7 @@ def login():
 
         if user and check_password_hash(user.password, password):
             login_user(user)
-            return redirect(url_for("dashboard"))
+            return redirect("/dashboard")
 
         flash("Invalid credentials")
 
