@@ -6,20 +6,22 @@ from rsa_utils import generate_keys
 
 auth_bp = Blueprint('auth', __name__)
 
-@auth_bp.route("/register", methods=["GET","POST"])
+
+@auth_bp.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
 
-        hashed_password = generate_password_hash(password)
+        if User.query.filter_by(username=username).first():
+            flash("Username already exists")
+            return redirect(url_for("auth.register"))
 
-        # Generate RSA keys
         public_key, private_key = generate_keys()
 
         new_user = User(
             username=username,
-            password=hashed_password,
+            password=generate_password_hash(password),
             public_key=public_key,
             private_key=private_key
         )
@@ -27,13 +29,13 @@ def register():
         db.session.add(new_user)
         db.session.commit()
 
-        flash("Account created! You can now login.")
+        flash("Account created! Please login.")
         return redirect(url_for("auth.login"))
 
     return render_template("register.html")
 
 
-@auth_bp.route("/login", methods=["GET","POST"])
+@auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
         username = request.form.get("username")
