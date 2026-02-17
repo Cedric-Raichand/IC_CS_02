@@ -7,7 +7,7 @@
 <body>
 
 <h2>Welcome {{ current_user.username }} 👋</h2>
-<p>This system encrypts your file using AES and protects the key using RSA before storage.</p>
+<p>Upload a file. It will be encrypted before storage.</p>
 
 <h3>Upload File</h3>
 <form method="POST" enctype="multipart/form-data">
@@ -17,7 +17,6 @@
 
 {% with messages = get_flashed_messages() %}
     {% if messages %}
-        <h4>Status:</h4>
         <ul>
         {% for msg in messages %}
             <li>{{ msg }}</li>
@@ -25,6 +24,20 @@
         </ul>
     {% endif %}
 {% endwith %}
+
+<hr>
+
+<h3>Your Files</h3>
+<ul>
+{% for file in files %}
+    <li>
+        {{ file.filename }}
+        <a href="/download/{{ file.id }}">Download</a>
+    </li>
+{% else %}
+    <p>No files uploaded yet</p>
+{% endfor %}
+</ul>
 
 <br>
 <a href="/logout">Logout</a>
