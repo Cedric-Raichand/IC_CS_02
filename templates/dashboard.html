@@ -29,10 +29,10 @@
 
 <h3>Your Files</h3>
 <ul>
-{% for file in files %}
+{% for file, token in files %}
     <li>
         {{ file.filename }}
-        <a href="/download/{{ file.id }}">Download</a>
+        <a href="/download/{{ file.id }}?token={{ token }}">Secure Download (60s)</a>
     </li>
 {% else %}
     <p>No files uploaded yet</p>
