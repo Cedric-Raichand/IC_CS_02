@@ -2,45 +2,126 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Dashboard | SecureShare</title>
+    <title>SecureShare Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            color: #fff;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background: #1e2a38;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+        }
+
+        h2 {
+            margin-bottom: 15px;
+        }
+
+        form {
+            display: flex;
+            margin-bottom: 20px;
+        }
+
+        input[type="file"] {
+            flex: 1;
+            padding: 8px;
+            border-radius: 6px 0 0 6px;
+            border: none;
+            font-size: 14px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 0 6px 6px 0;
+            background: #00c6ff;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #00a6d6;
+            transform: scale(1.05);
+        }
+
+        .flash {
+            background: #28a745;
+            color: #fff;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+
+        ul.files {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul.files li {
+            background: #16202b;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        ul.files li a {
+            text-decoration: none;
+            color: #00c6ff;
+            font-weight: bold;
+        }
+
+        a.logout {
+            display: inline-block;
+            margin-top: 20px;
+            color: #ff4c4c;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
+<div class="container">
+    <h2>Welcome</h2>
+    <p>Upload a file. It will be encrypted before storage.</p>
 
-<h2>Welcome {{ current_user.username }} 👋</h2>
-<p>Upload a file. It will be encrypted before storage.</p>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for msg in messages %}
+                <div class="flash">{{ msg }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
 
-<h3>Upload File</h3>
-<form method="POST" enctype="multipart/form-data">
-    <input type="file" name="file" required>
-    <button type="submit">Upload & Encrypt</button>
-</form>
+    <form method="POST" enctype="multipart/form-data">
+        <input type="file" name="file" required>
+        <button type="submit">Upload & Encrypt</button>
+    </form>
 
-{% with messages = get_flashed_messages() %}
-    {% if messages %}
-        <ul>
-        {% for msg in messages %}
-            <li>{{ msg }}</li>
+    <h3>Your Files</h3>
+    <ul class="files">
+        {% for file in files %}
+            <li>
+                {{ file.filename }}
+                <a href="/download/{{ file.id }}">Download</a>
+            </li>
+        {% else %}
+            <li>No files uploaded yet</li>
         {% endfor %}
-        </ul>
-    {% endif %}
-{% endwith %}
+    </ul>
 
-<hr>
-
-<h3>Your Files</h3>
-<ul>
-{% for file, token in files %}
-    <li>
-        {{ file.filename }}
-        <a href="/download/{{ file.id }}?token={{ token }}">Secure Download (60s)</a>
-    </li>
-{% else %}
-    <p>No files uploaded yet</p>
-{% endfor %}
-</ul>
-
-<br>
-<a href="/logout">Logout</a>
-
+    <a href="/logout" class="logout">Logout</a>
+</div>
 </body>
 </html>
