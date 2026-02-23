@@ -25,7 +25,7 @@ To design and implement a secure file sharing platform that demonstrates:
 * **Cryptography:** PyCryptodome
 * **Hashing:** Werkzeug Security
 * **Token Security:** Itsdangerous (signed timed URLs)
-* **Frontend:** HTML (Jinja Templates)
+* **Frontend:** HTML 
 
 ---
 
